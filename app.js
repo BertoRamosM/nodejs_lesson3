@@ -1,8 +1,11 @@
 // here we are using commonJS
 const express = require('express')
-const movies  = require('./movies.json')
+const movies = require('./movies.json')
+const cripto = require('node:crypto')
 
 const app = express()
+app.use(express.json())
+
 app.disable('x-powered-by')
 
 //an endpoint its a path where we have an available resource
@@ -12,7 +15,7 @@ app.disable('x-powered-by')
 app.get("/movies", (req, res) => {
   const { genre } = req.query
   if (genre) {
-    const filteredMovies = movies.filter(movie => movie.genre.includes(genre)
+    const filteredMovies = movies.filter(movie => movie.genre.some(g => g.toLowerCase() === genre.toLowerCase())
     )
     return res.json(filteredMovies)
   }
@@ -29,6 +32,40 @@ app.get('/movies/:id', (req, res) => {
   } else {
     res.status(404).json({ error: "Movie not found" });
   }
+})
+
+//create new movies, as every resource its identified with an url we use simply "/movies" and then the method defines the operation
+app.post('/movies', (req, res) => {
+  const {
+    title,
+    genre,
+    year,
+    director,
+    duration,
+    rate,
+    poster
+  } = req.body
+
+  //we create the new object
+  const newMovie = {
+    //to add an id, we use crypto from nodejs
+    //universal unique identifier
+    id: crypto.randomUUID(),
+    title,
+    genre,
+    year,
+    director,
+    duration,
+    rate: rate ?? 0,
+    poster
+  }
+
+  //this is not rest because we are saving the estate of the application in memory!!!!!!!!
+  //instead we should add it to a db
+  movies.push(newMovie)
+
+  //201 means new resource created
+  res.statusCode(201).json(newMovie)
 })
 
 
