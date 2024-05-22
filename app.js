@@ -1,27 +1,28 @@
 // here we are using commonJS
-const express = require('express')
-const movies  = require('./movies.json')
+const express = require("express");
+const movies = require("./movies.json");
 
-const app = express()
-app.disable('x-powered-by')
+const app = express();
+app.disable("x-powered-by");
 
 //an endpoint its a path where we have an available resource
 //all the resourses that are movies, we identify them with /movies
-app.get('/movies', (req, res) => {
-  res.json(movies)
-})
+app.get("/movies", (req, res) => {
+  res.json(movies);
+});
 
-//path-to-regexp (dynamic segment)
-app.get('/movies/:id', (req, res) => {
+//path-to-regexp library
+app.get("/movies/:id", (req, res) => {
+  const { id } = req.params;
+  const movie = movies.find((movie) => movie.id === id);
+  res.json(movie);
+});
 
-})
-
-
-const PORT = process.env.PORT ?? 1234
+const PORT = process.env.PORT ?? 1234;
 
 app.listen(PORT, () => {
-  console.log(`Server listening in port http://localhost:${PORT}`)
-})
+  console.log(`Server listening in port http://localhost:${PORT}`);
+});
 
 /* 
   REST: Software Architecture => (escalability, portability, simplicity, visibility, fiability, easy to modify)
