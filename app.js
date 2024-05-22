@@ -17,9 +17,24 @@ app.disable('x-powered-by')
 //an endpoint its a path where we have an available resource
 //all the resourses that are movies, we identify them with /movies
 
+const ACCEPTED_ORIGINS = [
+  "http://localhost:8080",
+  "http://localhost:3000",
+  "http://localhost:1234",
+  //and production urls:
+  "https://ourmoviesweb.com",
+  //and any other website that we want to allow, we just need to get the origin from the request header
+]
+
 //in the query we can pass any params from the url thanks to express
 app.get("/movies", (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*')
+  //here we can use '*' or the specific origin that we want to allow, like the https://localhost:8080 or we can create a list like above
+  const origin = req.header('origin')
+  if (ACCEPTED_ORIGINS.includes(origin) || !origin) {
+     res.header("Access-Control-Allow-Origin", "http://localhost:8080")
+  }
+  //remember if we make a request to ourselves, the header will not contain the origin
+ 
   const { genre } = req.query
   if (genre) {
     const filteredMovies = movies.filter(movie => movie.genre.some(g => g.toLowerCase() === genre.toLowerCase())
