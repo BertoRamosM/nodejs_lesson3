@@ -7,9 +7,17 @@ app.disable('x-powered-by')
 
 //an endpoint its a path where we have an available resource
 //all the resourses that are movies, we identify them with /movies
-app.get('/movies', (req, res) => {
-  res.json(movies)
-})
+
+//in the query we can pass any params from the url thanks to express
+app.get("/movies", (req, res) => {
+  const { genre } = req.query
+  if (genre) {
+    const filteredMovies = movies.filter(movie => movie.genre.includes(genre)
+    )
+    return res.json(filteredMovies)
+  }
+  res.json(movies);
+});
 
 //path-to-regexp library
 app.get('/movies/:id', (req, res) => {
