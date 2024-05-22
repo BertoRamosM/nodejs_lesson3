@@ -1,9 +1,14 @@
 // here we are using commonJS
 const express = require('express')
 const movies = require('./movies.json')
-const cripto = require('node:crypto')
+//crypto its for creating news "id"
+const crypto = require('crypto')
+//zod its for data valudastion
+const z = require('zod')
 
 const app = express()
+
+//the middleware of express to validate the body of the request
 app.use(express.json())
 
 app.disable('x-powered-by')
@@ -36,6 +41,28 @@ app.get('/movies/:id', (req, res) => {
 
 //create new movies, as every resource its identified with an url we use simply "/movies" and then the method defines the operation
 app.post('/movies', (req, res) => {
+
+
+  //we validate the request with a schema from zod 
+  const movieSchema = z.object({
+    title: z.string({
+      invalid_type_error: "Movie title must be a string",
+      required_error: "Title requiered"
+    }),
+    year: z.number().int().positive().min(1900).max(2025),
+    director: z.string(),
+    duration: z.number().int().max(10),
+    rate: z.number().min(0).max(10),
+    poster: z.string().url({
+      message: 'Poser must be a valid URL'
+    }),
+    genre: z.array(z.enum(['Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Thriller', 'Sci-Fi']),
+      {
+        required_error: 'Movie genre is requires',
+        invalid_type_error: 'Movie genre must be an array of strings'
+    })
+  })
+
   const {
     title,
     genre,
@@ -60,12 +87,15 @@ app.post('/movies', (req, res) => {
     poster
   }
 
+  //we require a validation library for this data something executed in runtime, like ZOD.dev
+
   //this is not rest because we are saving the estate of the application in memory!!!!!!!!
   //instead we should add it to a db
   movies.push(newMovie)
 
   //201 means new resource created
-  res.statusCode(201).json(newMovie)
+  //we return the new object created to update the clients cache
+  res.status(201).json(newMovie)
 })
 
 

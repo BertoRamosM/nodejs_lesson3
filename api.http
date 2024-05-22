@@ -1,4 +1,4 @@
-### get all the picturs
+### get all the movies
 GET http://localhost:1234/movies
 
 ### one movie for each id
