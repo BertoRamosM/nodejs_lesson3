@@ -3,8 +3,9 @@ const express = require('express')
 const movies = require('./movies.json')
 //crypto its for creating news "id"
 const crypto = require('crypto')
+
 //zod its for data valudastion
-const z = require('zod')
+const {validateMovie} = require('./schemas/movieScheme')
 
 const app = express()
 
@@ -43,48 +44,31 @@ app.get('/movies/:id', (req, res) => {
 app.post('/movies', (req, res) => {
 
 
-  //we validate the request with a schema from zod 
-  const movieSchema = z.object({
-    title: z.string({
-      invalid_type_error: "Movie title must be a string",
-      required_error: "Title requiered"
-    }),
-    year: z.number().int().positive().min(1900).max(2025),
-    director: z.string(),
-    duration: z.number().int().max(10),
-    rate: z.number().min(0).max(10),
-    poster: z.string().url({
-      message: 'Poser must be a valid URL'
-    }),
-    genre: z.array(z.enum(['Action', 'Adventure', 'Comedy', 'Drama', 'Fantasy', 'Horror', 'Thriller', 'Sci-Fi']),
-      {
-        required_error: 'Movie genre is requires',
-        invalid_type_error: 'Movie genre must be an array of strings'
-    })
-  })
+  //we validate the request with a schema from zod
+  //the best way to do this its to create a new folder called schema and store them all there
+  const result = validateMovie(req.body)
 
-  const {
-    title,
-    genre,
-    year,
-    director,
-    duration,
-    rate,
-    poster
-  } = req.body
+  if (result.error) {
+    return res.status(400).json({
+      error: JSON.parse(result.error.message)
+    })
+  }
 
   //we create the new object
   const newMovie = {
     //to add an id, we use crypto from nodejs
     //universal unique identifier
     id: crypto.randomUUID(),
+    ...result.data
+    /* 
     title,
     genre,
     year,
     director,
     duration,
     rate: rate ?? 0,
-    poster
+    poster 
+    */
   }
 
   //we require a validation library for this data something executed in runtime, like ZOD.dev
