@@ -5,7 +5,7 @@ const movies = require('./movies.json')
 const crypto = require('crypto')
 
 //zod its for data valudastion
-const {validateMovie} = require('./schemas/movieScheme')
+const {validateMovie, validatePartialMovie} = require('./schemas/movieScheme')
 
 const app = express()
 
@@ -54,6 +54,8 @@ app.post('/movies', (req, res) => {
     })
   }
 
+
+  //later on we will pass this object to the db
   //we create the new object
   const newMovie = {
     //to add an id, we use crypto from nodejs
@@ -80,6 +82,36 @@ app.post('/movies', (req, res) => {
   //201 means new resource created
   //we return the new object created to update the clients cache
   res.status(201).json(newMovie)
+})
+
+
+//update a movie property
+app.patch('/movies/:id', (req, res) => {
+  
+  const result = validatePartialMovie(req.body)
+
+  if (!result.success) {
+    return res.status(400).json({ error: JSON.parse(result.error.message)})
+  }
+
+    const { id } = req.params;
+
+  
+  //in this case we use the index to verify if it exists and to later works on it
+  const movieIndex = movies.findIndex(movie => movie.id === id)
+
+  //index-1 means the movie dosnt exists 
+  if (!movieIndex === -1) return res.status(404).json({ message: 'Movie not found' })
+  
+  const updateMovie = {
+    ...movies[movieIndex],
+    ...result.data
+  }
+
+  movies[movieIndex] = updateMovie
+
+  return res.json(updateMovie)
+  
 })
 
 
