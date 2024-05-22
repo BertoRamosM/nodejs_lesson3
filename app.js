@@ -145,3 +145,18 @@ app.listen(PORT, () => {
 
   => Separation of concepts: The components of the client and dthe server are separated. Allow the client and the server to grow independently
 */
+/* 
+DIFFERENCIES between POST, PUT and PATCH
+
+"Idempotency": its the property of doing the same single action many times and even like that we get the same result that we will get by doing it only once
+
+POST: create a new resource in the server(/movies)
+=>NOT idempotent, as we always create a new resource. If we send an item that exists already it will create AGAIN
+
+PUT: update an existing resourse or create if already exists(/movies/123-456-789)
+=>YES idempotent, even if we do the same request several time to the same resource we always get the same result
+
+
+PATCH: Update PARTIALLY a resources (/movies/123-456-789)
+=>IT CAN BE idempotent 
+*/
