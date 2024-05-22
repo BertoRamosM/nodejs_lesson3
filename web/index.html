@@ -25,8 +25,7 @@
         <article data-id="${movie.id}">
           <h2>${movie.title}</h2>
           <img src="${movie.poster}" alt="${movie.title}" />
-          <p>${movie.description}</p>
-          <article>
+          </article>
         `
       }).join('')
       document.querySelector('main').innerHTML = html

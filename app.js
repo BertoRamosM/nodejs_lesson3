@@ -19,6 +19,7 @@ app.disable('x-powered-by')
 
 //in the query we can pass any params from the url thanks to express
 app.get("/movies", (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*')
   const { genre } = req.query
   if (genre) {
     const filteredMovies = movies.filter(movie => movie.genre.some(g => g.toLowerCase() === genre.toLowerCase())
