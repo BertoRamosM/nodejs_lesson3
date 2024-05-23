@@ -29,9 +29,15 @@ const ACCEPTED_ORIGINS = [
 //in the query we can pass any params from the url thanks to express
 app.get("/movies", (req, res) => {
   //here we can use '*' or the specific origin that we want to allow, like the https://localhost:8080 or we can create a list like above
-  const origin = req.header('origin')
+  //this cors validation only works with basic methods GET/HEAD/POST
+/*   
+and for complex methods such as PUT/PATCH/DELETE
+we have to use the CORS PRE-Flight
+that requieres a propery called OPTIONS
+
+ */  const origin = req.header('origin')
   if (ACCEPTED_ORIGINS.includes(origin) || !origin) {
-     res.header("Access-Control-Allow-Origin", "http://localhost:8080")
+     res.header("Access-Control-Allow-Origin", origin)
   }
   //remember if we make a request to ourselves, the header will not contain the origin
  
@@ -127,7 +133,25 @@ app.patch('/movies/:id', (req, res) => {
   movies[movieIndex] = updateMovie
 
   return res.json(updateMovie)
+})
+
+app.delete('/movies/:id', (req, res) => {
   
+  const { id } = req.params
+  const movieIndex = movies.find(movie => movie.id === id)
+  if (movieIndex === -1) {
+    return res.status(400).json({message: 'Movie not found'})
+  }
+  movies.splice(movieIndex, 1)
+  return res.json({message:'Movie deleted'})
+})
+
+//this is what its requiered for the cors of delete
+app.options('/movies', (req, res) => {
+  const origin = req.header('origin')
+  if (ACCEPTED_ORIGINS.includes(origin) || !origin) {
+     res.header("Access-Control-Allow-Origin", origin)
+  }
 })
 
 
