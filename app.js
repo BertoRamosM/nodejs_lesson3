@@ -17,6 +17,16 @@ app.disable('x-powered-by')
 //an endpoint its a path where we have an available resource
 //all the resourses that are movies, we identify them with /movies
 
+
+//it exists also a "npm install cors -E" that help us with cors
+
+/* then...
+const cors = required = ('cors)
+app.use(cors())
+
+but attention, this cors will accept any request by default
+ */
+
 const ACCEPTED_ORIGINS = [
   "http://localhost:8080",
   "http://localhost:3000",
